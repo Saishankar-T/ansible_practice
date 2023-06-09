@@ -1,0 +1,31 @@
+- hosts: remotemachines
+  remote_user: ubuntu
+  become_user: root
+  become_method: sudo
+  become: yes
+
+  vars:
+    package_name: apache2
+    service_name: apache2
+  tasks:
+    - name: installing apache2
+      apt:
+        name: "{{ package_name  }}"
+        state: latest
+        update_cache: yes
+    - name: enabling the service
+      service:
+        name: "{{ service_name }}"
+        enabled: true
+        state: started
+    - name: copying index.html file from local to remote machine
+      copy:
+        dest: /var/www/html/index.html
+        src: /etc/ansible/remote-machines-files/index.html
+      notify: files-updated
+  handlers:
+    - name: files-updated
+      service:
+        name: "{{ service_name }}"
+        enabled: true
+        state: restarted

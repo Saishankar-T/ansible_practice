@@ -1,0 +1,67 @@
+- hosts: remotemachines
+  become_user: root
+  become_method: sudo
+  become: yes
+
+  vars:
+    package_name_ubuntu: apache2
+    service_name_ubuntu: apache2
+    package_name_redhat: httpd
+    service_name_redhat: httpd
+
+  tasks:
+    - name: installing apache2 for ubuntu
+      apt:
+        name: "{{ package_name_ubuntu  }}"
+        state: latest
+        update_cache: yes
+      when: ansible_distribution=="Ubuntu"
+
+    - name: enabling the service for ubuntu
+      service:
+        name: "{{ service_name_ubuntu }}"
+        enabled: true
+        state: started
+      when: ansible_distribution=="Ubuntu"
+
+    - name: copying index.html file from local to remote machine for ubuntu
+      copy:
+        dest: /var/www/html/index.html
+        src: /etc/ansible/remote-machines-files/index.html
+      when: ansible_distribution=="Ubuntu"
+      notify: files-updated1
+
+    - name: installing httpd for redhat
+      yum:
+        name: "{{ package_name_redhat  }}"
+        state: latest
+        update_cache: yes
+      when: ansible_distribution=="RedHat"
+
+    - name: enabling the service for redhat
+      service:
+        name: "{{ service_name_redhat }}"
+        enabled: true
+        state: started
+      when: ansible_distribution=="RedHat"
+
+    - name: copying index.html file from local to remote machine for redhat
+      copy:
+        dest: /var/www/html/index.html
+        src: /etc/ansible/remote-machines-files/index.html
+      when: ansible_distribution=="RedHat"
+      notify: files-updated2
+
+  handlers:
+    - name: files-updated1
+      service:
+        name: "{{ service_name_ubuntu }}"
+        enabled: true
+        state: restarted
+
+    - name: files-updated2
+      service:
+        name: "{{ service_name_redhat }}"
+        enabled: true
+        state: restarted
+

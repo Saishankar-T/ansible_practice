@@ -1,0 +1,4 @@
+- name: vars
+  include_vars: "{{ ansible_os_family }}.yaml"
+- name: tasks
+  include_tasks: "{{ ansible_os_family }}.yaml"

@@ -1,0 +1,30 @@
+- hosts: remotemachines
+  become_user: root
+  become_method: sudo
+  become: yes
+
+  tasks:
+    - name: installing different packages for ubuntu
+      apt:
+        name: "{{ item  }}"
+        state: latest
+        update_cache: yes
+      loop:
+        - wget
+        - zip
+        - unzip
+        - git
+        - ntp
+      when: ansible_distribution=="Ubuntu"
+    - name: installing different packages for redhat
+      yum:
+        name: "{{ item  }}"
+        state: latest
+        update_cache: yes
+      loop:
+        - wget
+        - zip
+        - unzip
+        - git
+        - chrony
+      when: ansible_distribution=="RedHat"

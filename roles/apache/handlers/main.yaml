@@ -1,0 +1,5 @@
+    - name: files-updated
+      service:
+        name: "{{ service_name }}"
+        enabled: true
+        state: restarted

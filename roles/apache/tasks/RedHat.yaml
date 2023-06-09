@@ -1,0 +1,16 @@
+    - name: installing apache2
+      yum:
+        name: "{{ package_name  }}"
+        state: latest
+        update_cache: yes
+    - name: enabling the service
+      service:
+        name: "{{ service_name }}"
+        enabled: true
+        state: started
+    - name: copying index.html file from local to remote machine
+      copy:
+        dest: /var/www/html/index.html
+        src: files/index.html
+      notify: files-updated
+
